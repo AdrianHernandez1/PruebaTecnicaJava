@@ -40,4 +40,7 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente en tu sistema:
 ## Ejecución del proyecto
 
 Una vez completada la configuración, puedes ejecutar el proyecto utilizando el siguiente comando:
+    ```
+    mvn spring-boot:run
+    ```
 
