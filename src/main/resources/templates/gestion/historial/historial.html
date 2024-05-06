@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="static/styles/inicio_sesion.css" th:href="@{/styles/inicio_sesion.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+</head>
+<body class="img-inicioSesion">
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Columna para la tabla de productos -->
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4"><b>Historial de entrada y salida de productos</b></h2>
+                        <div id="historialTable" class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Estatus de historial</th>
+                                        <th>Usuario</th>
+                                        <th>Fecha y hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Script para cargar historial y usuarios -->
+    <script>
+        // Función para cargar el historial desde la API
+        function cargarHistorial() {
+            axios.get('http://localhost:8080/movimiento')
+                .then(function(response) {
+                    // Limpiar la tabla
+                    document.querySelector('#historialTable tbody').innerHTML = '';
+
+                    // Obtener todos los usuarios
+                    axios.get('http://localhost:8080/usuario')
+                        .then(function(usuariosResponse) {
+                            // Mapear los usuarios por ID para facilitar el acceso
+                            const usuariosMap = {};
+                            usuariosResponse.data.forEach(usuario => {
+                                usuariosMap[usuario.id] = usuario.nombre+' '+usuario.apellidoPaterno+' '+usuario.apellidoMaterno;
+                            });
+
+                            // Recorrer los movimientos y agregarlos a la tabla
+                            response.data.forEach(function(movimiento) {
+                                const nombreUsuario = usuariosMap[movimiento.usuario] || 'Usuario Desconocido';
+                                const tipoMovimiento = movimiento.estatusEntradaSalida == 1 ? 'Entrada' : 'Salida';
+
+                                // Formatear la fecha y hora
+                                const fechaHora = new Date(movimiento.fechaHora);
+                                const fechaFormateada = fechaHora.toLocaleDateString();
+                                const horaFormateada = fechaHora.toLocaleTimeString();
+
+                                var row = `
+                                    <tr>
+                                        <td>${movimiento.idMovimiento}</td>
+                                        <td>${tipoMovimiento}</td>
+                                        <td>${nombreUsuario}</td>
+                                        <td>${fechaFormateada} ${horaFormateada}</td>
+                                    </tr>
+                                `;
+                                document.querySelector('#historialTable tbody').innerHTML += row;
+                            });
+                        })
+                        .catch(function(error) {
+                            console.error('Error al cargar los usuarios:', error);
+                        });
+                })
+                .catch(function(error) {
+                    console.error('Error al cargar el historial:', error);
+                });
+        }
+        // Llamar a la función para cargar el historial cuando se cargue la página
+        cargarHistorial();
+    </script>
+</body>
+</html>

@@ -1,12 +1,19 @@
-package main.java.com.productos.prueba.models;
+package com.example.demo.models;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Table(name = "Usuarios")
-public class UsuarioModel {
-
-    private int idUsuario;
+@Table(name = "usuario")
+public class ModeloUsuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
+    private Long idUsuario;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
@@ -14,24 +21,11 @@ public class UsuarioModel {
     private String contrasenia;
     private int estatus;
 
-    public ModeloUsuario(int idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String usuario, String contrasenia, int estatus) {
-        this.idUsuario = idUsuario;
-        this.nombre = nombre;
-        this.apellidoPaterno = apellidoPaterno;
-        this.apellidoMaterno = apellidoMaterno;
-        this.usuario = usuario;
-        this.contrasenia = contrasenia;
-        this.estatus = estatus;
-    }
-
-    public int getIdUsuario() {
+    public Long getId(){
         return idUsuario;
     }
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
+   
     public String getNombre() {
         return nombre;
     }
